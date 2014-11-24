@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SQL Console</title>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+    
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/codemirror/4.8.0/codemirror.min.css">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/codemirror/4.8.0/addon/hint/show-hint.css">
+
+    <style>
+      .CodeMirror {
+        border: 1px solid #000;
+        margin: 1em;
+      }
+
+      h1 .glyphicon{
+        top: 8px;
+      }
+
+      .btn-file {
+          position: relative;
+          overflow: hidden;
+      }
+      .btn-file input[type=file] {
+          position: absolute;
+          top: 0;
+          right: 0;
+          min-width: 100%;
+          min-height: 100%;
+          font-size: 100px;
+          text-align: right;
+          filter: alpha(opacity=0);
+          opacity: 0;
+          outline: none;
+          background: white;
+          cursor: inherit;
+          display: block;
+      }
+      
+    </style>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="http://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="http://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+  <body>
+    <div class="jumbotron">
+      <div class="container">
+        <h1><abbr title="Structured Query Language">S<i class="glyphicon glyphicon-search"></i>L</abbr> Console</h1>
+      </div>
+    </div>
+
+    <div id="content" class="container">
+      <p>I wrote an introduction article <a href="http://dl.dropboxusercontent.com/u/1268920/sql_console/sql_basics.html">here</a></p>
+      <p><a target="_new" href="http://www.sqlite.org/lang.html">Read the docs</a>, if you need help with syntax, and <a target="_new" href="http://www.sqlite.org/datatype3.html">here</a> is type info.</p>
+      <p>Press TAB for auto-complete.</p>
+      
+      <div id="errOut"></div>
+
+      <div class="row">
+        <textarea></textarea>
+      </div>
+      
+      <span title="load SQL from a text file" title="import SQL from a file" class="btn btn-warning btn-file"><i class="glyphicon glyphicon-open"></i> import <input id="infile" type="file"></span>
+      <button title="save full database SQL as a text file" id="outfile" title="export SQL to a file" class="btn btn-primary btn-file"><i class="glyphicon glyphicon-save"></i> export</button>
+      <button title="run the current SQL" id="execute" class="btn btn-success"><i class="glyphicon glyphicon-flash"></i> execute</button>
+
+      <div id="results"></div>
+    </div>
+  </body>
+
+  <script id="showResults" type="text/x-handlebars-template">
+    <div id="affected">rows affected: <span>{{affected}}</span></div>
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          {{#each rows.[0]}}
+            <th>{{@key}}</th>
+          {{/each}}
+        </tr>
+      </thead>
+      <tbody>
+        {{#each rows}}
+          <tr>
+            {{#each this}}
+              <td>{{this}}</td>
+            {{/each}}
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </script>
+
+  <script id="makeAlert" type="text/x-handlebars-template">
+    <div class="alert alert-{{type}} alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert">
+      <span aria-hidden="true">&times;</span>
+      <span class="sr-only">Close</span></button>
+      {{{message}}}
+    </div>
+  </script>
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/codemirror/4.8.0/codemirror.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/codemirror/4.8.0/addon/hint/show-hint.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/codemirror/4.8.0/addon/hint/sql-hint.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/codemirror/4.8.0/mode/sql/sql.min.js"></script>
+  <script src="http://cdn.biblys.fr/html5sql/1.0.0/html5sql.min.js"></script>
+  <script>
+  $(function(){
+    // load all handlebars templates
+    var templates = {};
+    $('[type="text/x-handlebars-template"]').each(function(){
+      templates[this.id] = Handlebars.compile(this.innerHTML);
+    });
+
+    function makeAlert(msg, type){
+      $('#errOut').append(templates.makeAlert({message: msg, type:type || 'danger'}));
+    }
+
+    if (!Modernizr.websqldatabase) {
+      $('#content').html('<div id="errOut"></div>');
+      makeAlert('Please use a browser that <a href="http://caniuse.com/#feat=sql-storage">supports WebSQL</a>.');
+      return;
+    }
+
+    html5sql.openDatabase('sqlconsole', 'SQL Console', 5*1024*1024);
+
+    var editor = CodeMirror.fromTextArea($('textarea').get(0), {
+      autofocus:true,
+      mode: 'text/x-sql',
+      matchBrackets: true,
+      extraKeys: {"Tab": "autocomplete"},
+      hintOptions: {},
+      hint : CodeMirror.hint.sql
+    });
+
+    // get all structure & data in current database
+    function getDB(cb){
+      html5sql.process("SELECT * FROM sqlite_master WHERE name NOT LIKE 'sqlite\\_%' escape '\\' AND name NOT LIKE '\\_%' escape '\\'", function(txTables, rsTables, rowsTables){
+        if (!rowsTables.length) return cb(null, []);
+        rowsTables.forEach(function(t,i){
+          html5sql.process("SELECT * FROM " + t.name, function(tx, rs, rows){
+            rowsTables[i].rows = rows;
+            cb(null, rowsTables);
+          }, cb);
+        });
+      }, cb);
+    }
+
+    // update the editor to know about current tables
+    function updateTables(){
+      getDB(function(err, tableInfo){
+        if (err) return makeAlert(err);
+        var tables = {};
+        tableInfo.forEach(function(ti){
+          if (ti && ti.rows && ti.rows[0]) tables[ti.name] = Object.keys(ti.rows[0]);
+        });
+        editor.setOption('hintOptions', {tables: Object.keys(tables)})
+      });
+    }
+    updateTables();
+
+    // load text file into editor
+    $('#infile').change(function(evt){
+      var filename = evt.target.files[0];
+      if (!filename) return;
+      var reader = new FileReader();
+      reader.onload = function(theFile){
+        editor.setValue(theFile.target.result);
+      };
+      reader.readAsText(filename, "UTF-8");
+    });
+
+    // save current database as file
+    $('#outfile').click(function(evt){
+      getDB(function(err, tables){
+        if (err) return makeAlert(err);
+        out = [];
+        tables.forEach(function(table){
+          out.push(table.sql + ';\n');
+          table.rows.forEach(function(row){
+            var fields = Object.keys(row);
+            var vals = fields.map(function(r){ return JSON.stringify(row[r]); });
+            out.push('INSERT INTO ' + table.name + ' (' + fields.join(',') + ') VALUES (' + vals.join(',') + ');');
+          });
+          $('<form method="post" action="http://download-data-uri.appspot.com/" style="display:none"><input type="hidden" name="filename" value="sql_console.sql"/><input type="hidden" name="data" value="data:text/x-sql,' + encodeURIComponent(out.join('\n')) + '"/></form>').submit().remove();
+        });
+      });
+    });
+
+    // run SQL in editor
+    $('#execute').click(function(){
+      $('#errOut').html('');
+      html5sql.process(editor.getValue(), function(tx, rs, rows){
+        $('#results').html(templates.showResults({affected: rs.rowsAffected, rows:rows}));
+        updateTables();
+      }, function(err) { makeAlert(err.message); });
+    });
+  });
+  </script>
+</html>
