@@ -13,11 +13,13 @@ Within a database, you can refer to tables by name, join multiple tables by diff
 
 ## sqlite
 
-SQL is a generic query language that has many variants. [SQLite](http://www.sqlite.org/) is the variant of SQL we are going to use. It's simple, small, fast, meant for local clients, & even included in [some browsers](http://caniuse.com/#feat=sql-storage). I made a cute lil console for it  [here](https://dl.dropboxusercontent.com/u/1268920/sql_console/index.html) that will help you get started.  You can run SQL and see results.
+SQL is a generic query language that has many variants. [SQLite](http://www.sqlite.org/) is the variant of SQL we are going to use. It's simple, small, fast, meant for local clients, & even included in [some browsers](http://caniuse.com/#feat=sql-storage).
 
 If you use Chrome, you can goto the "Resorces" tab of "Javascript Tools" and see "Web SQL" which will show you what data is stored in SQLite for the current web-domiain.  This can be handy if you just want to quickly see what's going on without running an SQL query.
 
-If you prefer to follow along with a nice local client, check out [SQLite Browser](http://sqlitebrowser.org/) for a GUI, or [sqlite3](http://www.sqlite.org/cli.html) for a command-line client.
+I made a cute lil console for it  [here](http://konsumer.github.io/learnsql/) that will help you get started.  You can run SQL and see results.
+
+If you prefer to follow along with non-web client, check out [SQLite Browser](http://sqlitebrowser.org/) for a GUI, or [sqlite3](http://www.sqlite.org/cli.html) for a command-line client.
 
 
 ## tables
