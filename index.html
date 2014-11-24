@@ -43,14 +43,6 @@
       }
       
     </style>
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="http://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="http://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
   </head>
   <body>
     <div class="jumbotron">
@@ -148,14 +140,19 @@
 
     // get all structure & data in current database
     function getDB(cb){
-      html5sql.process("SELECT * FROM sqlite_master WHERE name NOT LIKE 'sqlite\\_%' escape '\\' AND name NOT LIKE '\\_%' escape '\\'", function(txTables, rsTables, rowsTables){
-        if (!rowsTables.length) return cb(null, []);
-        rowsTables.forEach(function(t,i){
-          html5sql.process("SELECT * FROM " + t.name, function(tx, rs, rows){
-            rowsTables[i].rows = rows;
-            cb(null, rowsTables);
-          }, cb);
+      html5sql.process("SELECT * FROM sqlite_master WHERE name NOT LIKE 'sqlite\\_%' escape '\\' AND name NOT LIKE '\\_%' escape '\\'", function(txTables, rsTables, tables){
+        if (!tables.length) return cb(null, []);
+        tables.forEach(function(table){
+          var s = table.sql.split(',');
+          s[0] = s[0].replace(new RegExp('create\\s+table\\s+' + table.name + '\\s*\\(', 'i'),'');
+          table.fields = s.map(function(i){
+            return i.trim().split(/\s/).shift();
+          })
+          .filter(function(i){
+            return (i.indexOf(')') === -1)
+          })
         });
+        cb(null, tables)
       }, cb);
     }
 
@@ -165,9 +162,9 @@
         if (err) return makeAlert(err);
         var tables = {};
         tableInfo.forEach(function(ti){
-          if (ti && ti.rows && ti.rows[0]) tables[ti.name] = Object.keys(ti.rows[0]);
+          tables[ti.name] = ti.fields;
         });
-        editor.setOption('hintOptions', {tables: Object.keys(tables)})
+        editor.setOption('hintOptions', {tables: tables})
       });
     }
     updateTables();
