@@ -24,7 +24,7 @@ If you prefer to follow along with non-web client, check out [SQLite Browser](ht
 
 ## tables
 
-SQL is type-enforced & has some error-checking. It won't let you add records to a table that don't conform to the rules for that table.
+SQL is type-enforced & has some error-checking. It prevents you from adding records to a table that don't conform to the rules for that table.
 
 You can define a table with a `CREATE` statement.  Here is an example:
 
@@ -137,7 +137,7 @@ If you already have a record, and  you want to update it, here is how you do it:
 UPDATE Users SET email="david.konsumer@gmail.com" WHERE lastName="Konsumer";
 ```
 
-The `WHERE` clause can do the same things as `SELECT`'s. It can affect 1 or many records, depending on your `WHERE` caluse, just like `SELECT`s.
+The `WHERE` clause can do the same things as `SELECT`'s. It can affect 1 or many records, depending on your `WHERE` clause, just like `SELECT`s.
 
 
 ### Delete
@@ -148,7 +148,7 @@ The `WHERE` clause can do the same things as `SELECT`'s. It can affect 1 or many
 DELETE FROM Users WHERE lastName="Konsumer";
 ```
 
-Be careful. Just like `UPDATE`, this can affect many rows if you make your `WHERE` calause funny.
+Be careful. Just like `UPDATE`, this can affect many rows if you make your `WHERE` clause funny.
 
 
 ## JOINS
