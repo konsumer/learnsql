@@ -59,7 +59,16 @@
       <div id="errOut"></div>
 
       <div class="row">
-        <textarea></textarea>
+        <textarea>DROP TABLE IF EXISTS Users;
+CREATE TABLE Users(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  firstName VARCHAR(255) NOT NULL,
+  lastName VARCHAR(255) NOT NULL,
+  email VARCHAR(255),
+  created TIMESTAMP DEFAULT (DATETIME('now','localtime'))
+);
+INSERT INTO Users (firstName, lastName, email) VALUES ("David", "Konsumer", "konsumer@jetboystudio.com");
+SELECT * FROM Users;</textarea>
       </div>
       
       <span title="load SQL from a text file" title="import SQL from a file" class="btn btn-warning btn-file"><i class="glyphicon glyphicon-open"></i> import <input id="infile" type="file"></span>
