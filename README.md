@@ -195,7 +195,7 @@ INSERT INTO Departments (dept,EmployeeID) VALUES ('Human Resources', 8);
 ```
 
 
-This describes some `Employees` who work in various departments. The department `INSERT`s are adding  employees, by id, to the department & not all employees have a department. You records looks like this:
+This describes some `Employees` who work in various departments. The department `INSERT`s are adding  employees, by id, to the department & not all employees have a department. Your records looks like this:
 
 ```sql
 SELECT * FROM Employees;
