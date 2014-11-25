@@ -379,7 +379,7 @@ GROUP BY EmployeeID;
 
 ## more reading
 
-Once you have played around with all this stuff, and feel like you understand it, have a look at [this article](http://zetcode.com/db/sqlite/viewstriggerstransactions/) about views, triggers, & transactions. These are advanced SQLite tricks that translate well to other SQL variants. This really is just the basics. If you are  excited about doing even more with SQL, check out [the docs](https://www.sqlite.org/lang.html) to find out about all the other stuff you can do.
+Once you have played around with all this stuff, and feel like you understand it, have a look at [this article](http://zetcode.com/db/sqlite/viewstriggerstransactions/) about views, triggers, & transactions and [this article](http://zetcode.com/db/sqlite/sqlitefunctions/) about functions. These are more advanced SQLite tricks that translate well to other SQL variants. This really is just the basics. If you are  excited about doing even more with SQL, check out [the docs](https://www.sqlite.org/lang.html) to find out about all the other stuff you can do.
 
 [NOSQL](http://en.wikipedia.org/wiki/NoSQL) is a newer way of storing data that often is much simpler and faster. For most things I do, I use [mongdb](http://www.mongodb.org/) & [CouchDB](http://couchdb.apache.org/) which both use a [Document storage model](http://en.wikipedia.org/wiki/Document-oriented_database), and are much faster for me to prototype an application with, and generally get the data I need, immediately. Both perform a lot better than their SQL counterparts & scale to many systems easier and more robustly. [CouchDB](http://couchdb.apache.org/) tends to be better at dealing with trees & maps, and [mongdb](http://www.mongodb.org/) is much simpler to query. Both are awesome.
 
