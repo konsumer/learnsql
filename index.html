@@ -208,7 +208,7 @@ SELECT * FROM Users;</textarea>
 
     // run SQL in editor
     $('#execute').click(function(){
-      $('#errOut').html('');
+      $('#errOut, #results').html('');
       html5sql.process(editor.getValue(), function(tx, rs, rows){
         $('#results').html(templates.showResults({affected: rs.rowsAffected, rows:rows}));
         updateTables();
