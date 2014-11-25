@@ -64,7 +64,7 @@ CREATE TABLE Users(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   firstName VARCHAR(255) NOT NULL,
   lastName VARCHAR(255) NOT NULL,
-  email VARCHAR(255),
+  email VARCHAR(255) UNIQUE,
   created TIMESTAMP DEFAULT (DATETIME('now','localtime'))
 );
 INSERT INTO Users (firstName, lastName, email) VALUES ("David", "Konsumer", "konsumer@jetboystudio.com");
