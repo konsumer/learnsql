@@ -43,7 +43,7 @@ I will break it down:
 *  create a table called `Users` if there isn't one with the same name, already
 *  `id` is an auto-increment integer (every time you insert a record, it will give you the next available number, if it's not set.) It's a `PRIMARY KEY` meaning that it's indexed to be the fastest way to get a record, and it's unique (no 2 records can have the same `id`.)
 *  `firstName`, `lastName`, & `email` are strings. [SQLite types](https://www.sqlite.org/datatype3.html) are `NULL`, `INTEGER`, `REAL`, `TEXT`, & `BLOB`. `VARCHAR` resolves to `TEXT` and `(255)` is the maximum length. I use `VARCHAR` because some other SQL variants can optimize based on the concept that it's "variable length", and since SQLite resolves to this, I will get better performance on other database-engines, with the same syntax. `NOT NULL` means that you must have a value for this field.
-*  `created` is a `TIMESTAMP`, which resolves to a number at the lowest level, but will  output nice dat-stamp formatted text. I set it's default to `DATETIME('now','localtime')` which is whatever time you insert a record. This means that if you leave it blank, it will insert the created time of the record. In many other SQL variants the shorthand for this is just `NOW()`
+*  `created` is a `TIMESTAMP`, which resolves to a number at the lowest level, but will  output nice date-stamp formatted text. I set it's default to `DATETIME('now','localtime')` which is whatever time you insert a record. This means that if you leave it blank, it will insert the created time of the record. In many other SQL variants the shorthand for this is just `NOW()`
 
 These are the rules that will validate new records.
 
