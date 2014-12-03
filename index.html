@@ -194,14 +194,19 @@ SELECT * FROM Users;</textarea>
       getDB(function(err, tables){
         if (err) return makeAlert(err);
         out = [];
-        tables.forEach(function(table){
+        tables.forEach(function(table, i){
           out.push(table.sql + ';\n');
-          table.rows.forEach(function(row){
-            var fields = Object.keys(row);
-            var vals = fields.map(function(r){ return JSON.stringify(row[r]); });
-            out.push('INSERT INTO ' + table.name + ' (' + fields.join(',') + ') VALUES (' + vals.join(',') + ');');
+          html5sql.process('SELECT * FROM ' + table.tbl_name, function(tx, rs, rows){
+            rows.forEach(function(row){
+              var fields = Object.keys(row);
+              var vals = fields.map(function(r){ return JSON.stringify(row[r]); });
+              out.push('INSERT INTO ' + table.name + ' (' + fields.join(',') + ') VALUES (' + vals.join(',') + ');');
+            });
+            out.push('');
+            if (i == (tables.length-1)){
+              $('<form method="post" action="http://download-data-uri.appspot.com/" style="display:none"><input type="hidden" name="filename" value="sql_console.sql"/><input type="hidden" name="data" value="data:text/x-sql,' + encodeURIComponent(out.join('\n')) + '"/></form>').submit().remove();
+            }
           });
-          $('<form method="post" action="http://download-data-uri.appspot.com/" style="display:none"><input type="hidden" name="filename" value="sql_console.sql"/><input type="hidden" name="data" value="data:text/x-sql,' + encodeURIComponent(out.join('\n')) + '"/></form>').submit().remove();
         });
       });
     });
